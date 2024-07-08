@@ -13,10 +13,12 @@ st.write('The name on your Smoothie will be:', name_on_order)
 # Get active session and retrieve data
 cnx = st.connection("snowflake")
 session = cnx.session()
-my_dataframe = session.table("smoothies.public.fruit_options").select(col('Fruit_name'))
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('Fruit_name'),col('SEARCH_ON'))
+
 
 # Display data as a dataframe
 st.dataframe(data=my_dataframe, use_container_width=True)
+st.stop()
 
 # Multiselect for choosing ingredients with max selection limit
 ingredients_list = st.multiselect(
