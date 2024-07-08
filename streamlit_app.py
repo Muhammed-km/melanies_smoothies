@@ -33,8 +33,8 @@ if ingredients_list:
     # Remove trailing space
     ingredients_string = ingredients_string.strip()
 
-    # List to store successfully fetched nutritional info
-    successful_fruits = []
+    # List to store nutritional dataframes
+    nutritional_dfs = []
 
     # Loop through each fruit chosen and fetch nutritional info
     for fruit_chosen in ingredients_list:
@@ -45,19 +45,20 @@ if ingredients_list:
         if fruityvice_response.status_code == 200:
             # Convert JSON response to dataframe
             fv_data = fruityvice_response.json()
-            fv_df = st.dataframe(data=fv_data, use_container_width=True)
+            fv_df = st.dataframe(data=fv_data['nutritions'], use_container_width=True)
             st.write(f"Nutritional info for {fruit_chosen}:")
-            st.write(fv_data)  # Display raw JSON data for debugging
+            st.write(fv_df)  # Display nutritional dataframe
 
-            # Add fruit to successful list
-            successful_fruits.append(fruit_chosen)
+            # Append dataframe to list
+            nutritional_dfs.append(fv_df)
         else:
             st.error(f"Failed to fetch data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
 
-    # Display message for fruits that were not successfully fetched
-    failed_fruits = list(set(ingredients_list) - set(successful_fruits))
-    if failed_fruits:
-        st.write(f"Nutritional info for the following fruits is not available: {', '.join(failed_fruits)}")
+    # Display success message for selected fruits
+    if nutritional_dfs:
+        st.success(f'Nutritional info for selected fruits:')
+        for df in nutritional_dfs:
+            st.write(df)
 
 # Button to submit the order
 time_to_insert = st.button('Submit Order')
