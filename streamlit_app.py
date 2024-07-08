@@ -20,6 +20,11 @@ my_dataframe = session.table("smoothies.public.fruit_options").select(col('Fruit
 st.dataframe(data=my_dataframe, use_container_width=True)
 st.stop()
 
+#converting the snowpark dataframe to a pandas 
+pd_df = my_dataframe.to_pandas()
+st.dataframe(pd_df)
+st.stop()
+
 # Multiselect for choosing ingredients with max selection limit
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients",
