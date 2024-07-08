@@ -32,10 +32,18 @@ if ingredients_list:
 
     # Remove trailing space
     ingredients_string = ingredients_string.strip()
-    for fruit_chosen in ingredients_lis:
-        ingredients_string += fruit_chosen + ' ' 
-	    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
-	    fv_df = st.dataframe(data = fruityvice_response.json(), use_container_width = True)
+
+    # Loop through each fruit chosen and fetch nutritional info
+    for fruit_chosen in ingredients_list:
+        # Make API request to get nutritional info for each fruit
+        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen.lower()}")
+        
+        # Check if API request was successful
+        if fruityvice_response.status_code == 200:
+            # Convert JSON response to dataframe and display
+            fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
+        else:
+            st.error(f"Failed to fetch data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
 
     # Button to submit the order
     time_to_insert = st.button('Submit Order')
@@ -50,5 +58,4 @@ if ingredients_list:
         session.sql(my_insert_stmt).collect()
 
         # Display success message
-        st.success('Your Smoothie is ordered for {}! 🥤'.format(name_on_order))
-
+        st.success(f'Your Smoothie is ordered for {name_on_order}! 🥤')
