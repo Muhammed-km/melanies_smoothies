@@ -32,7 +32,7 @@ if ingredients_list:
 
     # Remove trailing space
     ingredients_string = ingredients_string.strip()
-     for fruit_chosen in ingredients_lis:
+    for fruit_chosen in ingredients_lis:
         ingredients_string += fruit_chosen + ' ' 
 	    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
 	    fv_df = st.dataframe(data = fruityvice_response.json(), use_container_width = True)
