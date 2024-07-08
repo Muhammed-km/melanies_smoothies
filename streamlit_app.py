@@ -32,12 +32,21 @@ if ingredients_list:
 
     # Remove trailing space
     ingredients_string = ingredients_string.strip()
-    
+
     # Loop through each fruit chosen and fetch nutritional info
     for fruit_chosen in ingredients_list:
-        ingredients_string += fruit_chosen + ' '
+        # Make API request to get nutritional info for each fruit
         fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen.lower()}")
-        fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
+        
+        # Check if API request was successful
+        if fruityvice_response.status_code == 200:
+            # Convert JSON response to dataframe
+            fv_data = fruityvice_response.json()
+            fv_df = st.dataframe(data=fv_data, use_container_width=True)
+            st.write(f"Nutritional info for {fruit_chosen}:")
+            st.write(fv_data)  # Display raw JSON data for debugging
+        else:
+            st.error(f"Failed to fetch data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
 
 # Button to submit the order
 time_to_insert = st.button('Submit Order')
