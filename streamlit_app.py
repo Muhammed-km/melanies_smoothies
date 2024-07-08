@@ -64,11 +64,14 @@ if fruityvice_response.status_code == 200:
         # Extract nutritions data from the response
         nutritions_data = fruit_info['nutritions']
         
-        # Convert nutritions data to a pandas DataFrame
-        nutritions_df = pd.DataFrame.from_dict([nutritions_data])
+        # Prepare data for st.dataframe
+        nutritions_df_data = {
+            'Nutrient': list(nutritions_data.keys()),
+            'Value': list(nutritions_data.values())
+        }
         
-        # Display nutritions data as a dataframe
+        # Display nutritions data as a dataframe using st.dataframe
         st.write("Nutritional Information:")
-        st.write(nutritions_df)
+        st.dataframe(data=nutritions_df_data, use_container_width=True)
 else:
     st.error(f"Failed to fetch data from Fruityvice API. Status code: {fruityvice_response.status_code}")
