@@ -21,7 +21,7 @@ st.dataframe(data=my_dataframe, use_container_width=True)
 # Multiselect for choosing ingredients with max selection limit
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients",
-    my_dataframe,  # Directly use the DataFrame column as options
+    my_dataframe['Fruit_name'].tolist(),  # Directly use the DataFrame column as options
     max_selections=5  # Limit the maximum selections to 5
 )
 
@@ -43,14 +43,22 @@ if ingredients_list:
 
         # Check if API request was successful
         if fruityvice_response.status_code == 200:
-            # Convert JSON response to dataframe
+            # Convert JSON response to dictionary
             fv_data = fruityvice_response.json()
-            fv_df = st.dataframe(data=fv_data['nutritions'], use_container_width=True)
-            st.write(f"Nutritional info for {fruit_chosen}:")
-            st.write(fv_df)  # Display nutritional dataframe
 
-            # Append dataframe to list
-            nutritional_dfs.append(fv_df)
+            # Extract nutritional info
+            nutritions_data = fv_data.get('nutritions')
+
+            if nutritions_data:
+                # Create a dataframe from the nutritional info
+                fv_df = st.dataframe(data=[nutritions_data], use_container_width=True)
+                st.write(f"Nutritional info for {fruit_chosen}:")
+                st.write(fv_df)  # Display nutritional dataframe
+
+                # Append dataframe to list
+                nutritional_dfs.append(fv_df)
+            else:
+                st.error(f"No nutritional info found for {fruit_chosen}")
         else:
             st.error(f"Failed to fetch data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
 
