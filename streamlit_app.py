@@ -21,7 +21,7 @@ st.dataframe(data=my_dataframe, use_container_width=True)
 # Multiselect for choosing ingredients with max selection limit
 ingredients_list = st.multiselect(
     "Choose up to 5 ingredients",
-    my_dataframe['Fruit_name'].tolist(),  # Directly use the DataFrame column as options
+    my_dataframe,  # Directly use the DataFrame column as options
     max_selections=5  # Limit the maximum selections to 5
 )
 
@@ -32,53 +32,22 @@ if ingredients_list:
 
     # Remove trailing space
     ingredients_string = ingredients_string.strip()
+    for fruit_chosen in ingredients_lis:
+        ingredients_string += fruit_chosen + ' ' 
+	    fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
+	    fv_df = st.dataframe(data = fruityvice_response.json(), use_container_width = True)
 
-    # List to store nutritional dataframes
-    nutritional_dfs = []
-
-    # Loop through each fruit chosen and fetch nutritional info
-    for fruit_chosen in ingredients_list:
-        # Make API request to get nutritional info for each fruit
-        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen.lower()}")
-
-        # Check if API request was successful
-        if fruityvice_response.status_code == 200:
-            # Convert JSON response to dictionary
-            fv_data = fruityvice_response.json()
-
-            # Extract nutritional info
-            nutritions_data = fv_data.get('nutritions')
-
-            if nutritions_data:
-                # Create a dataframe from the nutritional info
-                fv_df = st.dataframe(data=[nutritions_data], use_container_width=True)
-                st.write(f"Nutritional info for {fruit_chosen}:")
-                st.write(fv_df)  # Display nutritional dataframe
-
-                # Append dataframe to list
-                nutritional_dfs.append(fv_df)
-            else:
-                st.error(f"No nutritional info found for {fruit_chosen}")
-        else:
-            st.error(f"Failed to fetch data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
-
-    # Display success message for selected fruits
-    if nutritional_dfs:
-        st.success(f'Nutritional info for selected fruits:')
-        for df in nutritional_dfs:
-            st.write(df)
-
-# Button to submit the order
+    # Button to submit the order
 time_to_insert = st.button('Submit Order')
 
-# Execute SQL statement if button is clicked
+    # Execute SQL statement if button is clicked
 if time_to_insert:
-    # Construct SQL INSERT statement
-    my_insert_stmt = """INSERT INTO smoothies.public.orders(ingredients, name_on_order)
-                        VALUES ('{}', '{}')""".format(ingredients_string, name_on_order)
+        # Construct SQL INSERT statement
+        my_insert_stmt = """INSERT INTO smoothies.public.orders(ingredients, name_on_order)
+                            VALUES ('{}', '{}')""".format(ingredients_string, name_on_order)
 
-    # Execute the SQL statement
-    session.sql(my_insert_stmt).collect()
+        # Execute the SQL statement
+        session.sql(my_insert_stmt).collect()
 
-    # Display success message
-    st.success(f'Your Smoothie is ordered for {name_on_order}! 🥤')
+        # Display success message
+        st.success('Your Smoothie is ordered for {}! 🥤'.format(name_on_order))
