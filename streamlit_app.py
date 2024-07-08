@@ -32,22 +32,24 @@ if ingredients_list:
 
     # Remove trailing space
     ingredients_string = ingredients_string.strip()
-    for fruit_chosen in ingredients_lis:
-        ingredients_string += fruit_chosen + ' ' 
-	fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
-	fv_df = st.dataframe(data = fruityvice_response.json(), use_container_width = True)
+    
+    # Loop through each fruit chosen and fetch nutritional info
+    for fruit_chosen in ingredients_list:
+        ingredients_string += fruit_chosen + ' '
+        fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen.lower()}")
+        fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
 
-    # Button to submit the order
-        time_to_insert = st.button('Submit Order')
+# Button to submit the order
+time_to_insert = st.button('Submit Order')
 
-    # Execute SQL statement if button is clicked
-    if time_to_insert:
-        # Construct SQL INSERT statement
-        my_insert_stmt = """INSERT INTO smoothies.public.orders(ingredients, name_on_order)
-                            VALUES ('{}', '{}')""".format(ingredients_string, name_on_order)
+# Execute SQL statement if button is clicked
+if time_to_insert:
+    # Construct SQL INSERT statement
+    my_insert_stmt = """INSERT INTO smoothies.public.orders(ingredients, name_on_order)
+                        VALUES ('{}', '{}')""".format(ingredients_string, name_on_order)
 
-        # Execute the SQL statement
-        session.sql(my_insert_stmt).collect()
+    # Execute the SQL statement
+    session.sql(my_insert_stmt).collect()
 
-        # Display success message
-        st.success('Your Smoothie is ordered for {}! 🥤'.format(name_on_order))
+    # Display success message
+    st.success(f'Your Smoothie is ordered for {name_on_order}! 🥤')
