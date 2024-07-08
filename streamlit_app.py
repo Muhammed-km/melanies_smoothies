@@ -48,22 +48,27 @@ if ingredients_list:
         # Display success message
         st.success('Your Smoothie is ordered for {}! 🥤'.format(name_on_order))
 
+# API request to fruityvice.com
 fruityvice_response = requests.get("https://fruityvice.com/api/fruit/watermelon")
 
 if fruityvice_response.status_code == 200:
     # Convert JSON response to dictionary
     fruit_info = fruityvice_response.json()
     
-    # Display fruit info as JSON
+    # Display fruit info
     st.write("Information about Watermelon from Fruityvice API:")
     st.write(fruit_info)
     
-    # Optionally, display specific fields from the API response as dataframe
-    # Example: Displaying 'nutrients' field as a dataframe
-    if 'nutrients' in fruit_info:
-        nutrients_df = st.dataframe(fruit_info['nutrients'], use_container_width=True)
+    # Check if 'nutritions' field exists in the response
+    if 'nutritions' in fruit_info:
+        # Extract nutritions data from the response
+        nutritions_data = fruit_info['nutritions']
+        
+        # Convert nutritions data to a pandas DataFrame
+        nutritions_df = pd.DataFrame.from_dict([nutritions_data])
+        
+        # Display nutritions data as a dataframe
         st.write("Nutritional Information:")
-        st.write(nutrients_df)
-
+        st.write(nutritions_df)
 else:
     st.error(f"Failed to fetch data from Fruityvice API. Status code: {fruityvice_response.status_code}")
