@@ -37,7 +37,7 @@ if ingredients_list:
     for fruit_chosen in ingredients_list:
         # Make API request to get nutritional info for each fruit
         fruityvice_response = requests.get(f"https://fruityvice.com/api/fruit/{fruit_chosen.lower()}")
-        
+
         # Check if API request was successful
         if fruityvice_response.status_code == 200:
             # Convert JSON response to dataframe
@@ -47,6 +47,9 @@ if ingredients_list:
             st.write(fv_data)  # Display raw JSON data for debugging
         else:
             st.error(f"Failed to fetch data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
+
+            # Display placeholder message for failed fruit
+            st.write(f"Nutritional info for {fruit_chosen} is not available.")
 
 # Button to submit the order
 time_to_insert = st.button('Submit Order')
